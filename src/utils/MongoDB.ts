@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 function getDatabase() {
   try {
-    mongoose.connect(MONGO_URI).then(() => {
+    mongoose.connect(MONGO_URI, { dbName: "padelnuestro" }).then(() => {
       console.log("Connected to dabase");
     });
   } catch (err: any) {

@@ -7,15 +7,15 @@ const ticketSchema = new Schema(
       required: false,
     },
     idTicket: {
-      type: String,
-      unique: true
+      type: Number
     },
     otherProps : {}
   },
   {
     strict: false,
+    saveErrorIfNotFound: true
   }
 );
 
-const ticketModel = model('tickets', ticketSchema);
+const ticketModel = model('jsons', ticketSchema);
 export default ticketModel;

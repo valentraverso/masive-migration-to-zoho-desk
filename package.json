@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon  --legacy-watch src/index.ts --max-old-space-size=20480 --build-optimizer=true --optimize_for_size"
+    "dev": "nodemon --legacy-watch src/index.ts"
   },
   "author": "",
   "license": "ISC",

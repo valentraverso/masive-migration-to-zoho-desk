@@ -1,15 +1,12 @@
 import { Router } from "express";
-import ticketsController from "../../controllers/tickets.controller";
+import ticketsController from "../../controllers/v.2/tickets.controller";
 
 const ticketRouter = Router();
 
-const { getAll, uploadJSON, uploadCSV, uploadAttachments, uploadComments } = ticketsController;
+const { getAll, upload } = ticketsController;
 
 ticketRouter
-.get("/all", getAll)
-.post("/upload/json", uploadJSON)
-.post("/upload/csv", uploadCSV)
-.post("/upload/attachments", uploadAttachments)
-.post("/upload/comments", uploadComments)
+  .get("/all", getAll)
+  .post("/v2/upload", upload);
 
 export { ticketRouter };
