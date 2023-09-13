@@ -27,10 +27,12 @@ export const DB_PORT =
   typeof process.env.DB_PORT !== "undefined"
     ? parseInt(process.env.DB_PORT)
     : 3306;
-export const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET || "";
-export const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID || "";
-export const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN || "";
-export const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL || "";
+export const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET ?? "";
+export const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID ?? "";
+export const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN ?? "";
+export const ZOHO_ACCOUNTS_URL = process.env.ZOHO_ACCOUNTS_URL ?? "";
+export const ZOHO_API_URL = process.env.ZOHO_API_URL ?? "";
+export const ZOHO_ORG_ID = process.env.ZOHO_ORG_ID ?? "";
 
 export default {
   PORT,
@@ -47,4 +49,6 @@ export default {
   ZOHO_CLIENT_ID,
   ZOHO_REFRESH_TOKEN,
   ZOHO_ACCOUNTS_URL,
+  ZOHO_API_URL,
+  ZOHO_ORG_ID
 };

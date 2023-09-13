@@ -13,6 +13,7 @@ import downloadAttachment from "../../utils/downloadAttachent";
 import axios from "axios";
 import https from "https";
 import csvModel from "../../models/csv.model";
+import { ZOHO_API_URL, ZOHO_ORG_ID } from "../../config/config";
 
 const ticketsController = {
   getAll: async (req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +49,7 @@ const ticketsController = {
     const optionsDepartment = {
       headers: {
         Authorization: `Zoho-oauthtoken ${await zohoAuth.getAccessToken()}`,
-        orgId: "20091741223",
+        orgId: ZOHO_ORG_ID,
         "Content-Type": "application/json",
       },
     };
@@ -57,7 +58,7 @@ const ticketsController = {
      * Request departments
      */
     const callDepartments = await fetch(
-      "https://desk.zoho.eu/api/v1/departments",
+      `${ZOHO_API_URL}/departments`,
       optionsDepartment
     );
     const departmentJson = await callDepartments.json();
@@ -76,10 +77,11 @@ const ticketsController = {
        */
       const csvTickets: any = await csvModel
         .find({
-          "Brand name": "STREETPADEL",
+          "Brand name": "STREETPRORUNNING",
           Via: {
             $in: ["Mail", "Closed Ticket"],
           },
+          "Created at": { $gte: "2022-01-01" },
           // idCsv: {
           //   $in: [265201],
           // },
@@ -87,13 +89,15 @@ const ticketsController = {
         .lean()
         .exec();
 
-      for (const row of csvTickets) {
-        // if ((i / 50) % 2 === 0) {
-        //   setTimeout(() => {
-        //     console.log("Wait 5 seconds to continue...");
-        //   }, 50000);
-        // }
+      async function wait50() {
+        const time = setTimeout(() => {
+          console.log("Wait 5 seconds to continue...");
+        }, 50000);
 
+        return await time;
+      }
+
+      for (const [i, row] of csvTickets.entries()) {
         /*
          * Search ticket of CSV in Json collection
          */
@@ -105,13 +109,13 @@ const ticketsController = {
           .exec();
 
         // Solo sube lo que tiene adjuntos | BORRAR
-        if (
-          !search?.hasOwnProperty("comments") ||
-          search?.comments?.length < 1
-        ) {
-          console.log("no comments");
-          continue;
-        }
+        // if (
+        //   !search?.hasOwnProperty("comments") ||
+        //   search?.comments?.length < 1
+        // ) {
+        //   console.log("no comments");
+        //   continue;
+        // }
 
         /*
          * If ticket of CSV don't exist in json, add it on json collection
@@ -119,7 +123,7 @@ const ticketsController = {
         if (!search) {
           Object.assign(row, { idTicket: row["idCsv"] });
           delete row["idCsv"];
-          await ticketModel.create(row);
+          // await ticketModel.create(row);
         }
 
         // Assign corresponding status
@@ -136,10 +140,10 @@ const ticketsController = {
         }
 
         /*
-         *   Select department id where we are going to upload ticket
+         *   Set department id where we are going to upload ticket
          */
         const department = departmentsId.find(
-          (department: any) => department.name === "Time2Padel-PadelMania"
+          (department: any) => department.name === "Pruebas"
         ); /*row["Brand Name"]*/
 
         /*
@@ -169,16 +173,16 @@ const ticketsController = {
           method: "POST",
           headers: {
             Authorization: `Zoho-oauthtoken ${await zohoAuth.getAccessToken()}`,
-            orgId: "20091741223",
+            orgId: ZOHO_ORG_ID,
             "Content-Type": "application/json",
           },
         };
 
         // Upload ticket
-        const uploadTicket = await fetch(
-          `https://desk.zoho.eu/api/v1/tickets`,
-          { ...optionsRequest, body: JSON.stringify(dataTicket) }
-        );
+        const uploadTicket = await fetch(`${ZOHO_API_URL}/tickets`, {
+          ...optionsRequest,
+          body: JSON.stringify(dataTicket),
+        });
 
         const uploadTicketResponse = await uploadTicket.json();
 
@@ -209,7 +213,7 @@ const ticketsController = {
       function timerComments(i: number, comment: any, idTicket: any) {
         setTimeout(() => {
           uploadComment(i, comment, idTicket);
-        }, i * 1000);
+        }, i * 800);
       }
 
       async function uploadComment(i: number, comment: any, idTicket: any) {
@@ -221,12 +225,12 @@ const ticketsController = {
         };
 
         const uploadMessage = await fetch(
-          `https://desk.zoho.eu/api/v1/tickets/${idTicket}/comments`,
+          `${ZOHO_API_URL}/tickets/${idTicket}/comments`,
           {
             method: "POST",
             headers: {
               Authorization: `Zoho-oauthtoken ${await zohoAuth.getAccessToken()}`,
-              orgId: "20091741223",
+              orgId: ZOHO_ORG_ID,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(dataComments),
@@ -249,7 +253,7 @@ const ticketsController = {
       ) {
         setTimeout(() => {
           uploadAttachment(i, attachment, idTicket);
-        }, i * 1000);
+        }, i * 800);
       }
 
       async function uploadAttachment(
@@ -270,12 +274,12 @@ const ticketsController = {
         try {
           const httpsAgent = new https.Agent({ keepAlive: true });
           const response = await axios.post(
-            `https://desk.zoho.eu/api/v1/tickets/${idTicket}/attachments`,
+            `${ZOHO_API_URL}/tickets/${idTicket}/attachments`,
             formData,
             {
               headers: {
                 Authorization: `Zoho-oauthtoken ${await zohoAuth.getAccessToken()}`,
-                orgId: "20091741223", // Change this to the appropriate file type
+                orgId: ZOHO_ORG_ID, // Change this to the appropriate file type
                 "Content-Type": "multipart/form-data",
               },
               httpsAgent: httpsAgent,
@@ -283,8 +287,13 @@ const ticketsController = {
           );
 
           await unlink(`src/assets/tmp/${attachment.file_name}`);
+
+          console.log(idTicket);
         } catch (err) {
-          console.log(err);
+          console.log({
+            idTicket: idTicket,
+            error: err,
+          });
         }
       }
 
