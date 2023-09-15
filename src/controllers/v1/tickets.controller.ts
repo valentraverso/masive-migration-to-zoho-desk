@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import ticketModel from "../models/tickets.model";
+import ticketModel from "../../models/tickets.model";
 import { createReadStream, fstat, readFileSync, unlink } from "fs-extra";
 import { FileArray, UploadedFile } from "express-fileupload";
 import readline from "readline";
 import CsvReadableStream from "csv-reader";
-import zohoAuth from "../utils/zoho/auth";
+import zohoAuth from "../../utils/zoho/auth";
 import FormData from "form-data";
 import fetch from "node-fetch";
 import path from "path";
 import fs from "fs-extra";
-import downloadAttachment from "../utils/downloadAttachent";
+import downloadAttachment from "../../utils/downloadAttachent";
 import axios from "axios";
 import https from 'https'
 

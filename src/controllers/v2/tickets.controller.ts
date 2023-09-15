@@ -77,7 +77,9 @@ const ticketsController = {
        */
       const csvTickets: any = await csvModel
         .find({
-          "Brand name": "STREETPRORUNNING",
+          "Brand name": {
+            $in: ["PadelMania", "Time2Padel"]
+          },
           Via: {
             $in: ["Mail", "Closed Ticket"],
           },
@@ -86,6 +88,7 @@ const ticketsController = {
           //   $in: [265201],
           // },
         })
+        // .skip()
         .lean()
         .exec();
 
@@ -143,8 +146,8 @@ const ticketsController = {
          *   Set department id where we are going to upload ticket
          */
         const department = departmentsId.find(
-          (department: any) => department.name === "Pruebas"
-        ); /*row["Brand Name"]*/
+          (department: any) => department.name === "Time2Padel-PadelMania"
+        ); /*row["Brand name"]*/
 
         /*
          * Object which is going to be sent in the request
