@@ -77,9 +77,7 @@ const ticketsController = {
        */
       const csvTickets: any = await csvModel
         .find({
-          "Brand name": {
-            $in: ["PadelMania", "Time2Padel"]
-          },
+          "Brand name": "Ofertas de Padel",
           Via: {
             $in: ["Mail", "Closed Ticket"],
           },
@@ -88,7 +86,6 @@ const ticketsController = {
           //   $in: [265201],
           // },
         })
-        // .skip()
         .lean()
         .exec();
 
@@ -146,7 +143,7 @@ const ticketsController = {
          *   Set department id where we are going to upload ticket
          */
         const department = departmentsId.find(
-          (department: any) => department.name === "Time2Padel-PadelMania"
+          (department: any) => department.name === "Ofertas de Padel"
         ); /*row["Brand name"]*/
 
         /*
@@ -216,7 +213,7 @@ const ticketsController = {
       function timerComments(i: number, comment: any, idTicket: any) {
         setTimeout(() => {
           uploadComment(i, comment, idTicket);
-        }, i * 800);
+        }, i * 600);
       }
 
       async function uploadComment(i: number, comment: any, idTicket: any) {
